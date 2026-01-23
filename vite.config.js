@@ -13,5 +13,20 @@ export default defineConfig({
     ],
     server: {
         host: "0.0.0.0",
+        proxy: {
+            '/api': {
+                target: 'https://trip.larkenterprise.com',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ''),
+                configure: (proxy, options) => {
+                    proxy.on('proxyReq', (proxyReq, req, res) => {
+                        console.log('Proxying request:', req.method, req.url);
+                    });
+                    proxy.on('proxyRes', (proxyRes, req, res) => {
+                        console.log('Received response:', proxyRes.statusCode, req.url);
+                    });
+                }
+            }
+        }
     },
 });
