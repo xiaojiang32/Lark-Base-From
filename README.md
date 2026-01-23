@@ -572,11 +572,8 @@ pnpm preview
    - 没有 server、api、backend 等后端目录
    - 没有数据库配置文件
 3. 数据交互方式 ：
-   
-   - 数据提交通过 webhook 发送到外部 API： https://trip.larkenterprise.com/base/workflow/webhook/event/SOhPaA13LwMcUshiprzc05yQnuf
-   - Vite 配置中的 proxy 仅用于开发环境解决跨域问题，将 /api 请求代理到外部服务器
+   - 数据提交通过配置api请求-data-JSON（表单数据映射）
 4. 构建输出 ：
-   
    - 构建产物是静态文件（HTML、CSS、JS），输出到 dist 目录
    - 可以部署到任何静态文件服务器（如 Nginx、CDN、GitHub Pages 等）
 结论 ：这是一个纯前端项目，作为 Lark Base Dashboard 的表单组件，所有业务逻辑在前端处理，数据通过外部 webhook 提交，不包含后端服务。
