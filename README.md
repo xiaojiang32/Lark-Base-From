@@ -558,7 +558,25 @@ pnpm preview
 - 可访问性：符合 WCAG 2.1 AAA 标准
 - 国际化：支持中文、英文、日文
 
-**一句话总结**：
-「把右侧属性面板当成 Excel 公式栏，把左侧卡片当成实时预览，就能把任何表单需求在 5 分钟内「画」出来。」
 
-该项目可以作为飞书插件开发的参考案例，为其他低代码组件的开发提供借鉴。
+**项目说明**
+1. 技术栈 ：
+   
+   - 使用 React + TypeScript + Vite 构建前端应用
+   - UI 框架：Semi UI（飞书仪表盘主题）
+   - 国际化：i18next
+   - 没有任何后端框架依赖（如 Express、Koa、NestJS 等）
+2. 项目结构 ：
+   
+   - 只有前端代码目录（ src/components 、 src/locales 等）
+   - 没有 server、api、backend 等后端目录
+   - 没有数据库配置文件
+3. 数据交互方式 ：
+   
+   - 数据提交通过 webhook 发送到外部 API： https://trip.larkenterprise.com/base/workflow/webhook/event/SOhPaA13LwMcUshiprzc05yQnuf
+   - Vite 配置中的 proxy 仅用于开发环境解决跨域问题，将 /api 请求代理到外部服务器
+4. 构建输出 ：
+   
+   - 构建产物是静态文件（HTML、CSS、JS），输出到 dist 目录
+   - 可以部署到任何静态文件服务器（如 Nginx、CDN、GitHub Pages 等）
+结论 ：这是一个纯前端项目，作为 Lark Base Dashboard 的表单组件，所有业务逻辑在前端处理，数据通过外部 webhook 提交，不包含后端服务。
