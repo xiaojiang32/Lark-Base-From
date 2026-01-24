@@ -2,6 +2,11 @@ import './style.scss';
 import React, { useState, useEffect } from 'react';
 import { DashboardState } from '@lark-base-open/js-sdk';
 import { Toast, Tabs, TabPane, Button, Modal, Input, InputNumber, Select, Switch } from '@douyinfe/semi-ui';
+
+// 全局配置Toast，设置默认持续时间为1.5秒
+Toast.config({
+  duration: 1.5
+});
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useFormConfig, useFormValidation, useFormSubmit } from '../../hooks';
 import { IFormConfig, IFormField, FieldType } from '../../types';
@@ -155,8 +160,8 @@ function GlobalConfigPanel({ config, setConfig, saveConfig }: any) {
 function getFieldTypeName(type: string): string {
   const typeMap: Record<string, string> = {
     text: '输入框',
-    option: '选项输入框',
-    select: '下拉选择',
+    option: '选项框',
+    select: '下拉单选',
     multiSelect: '下拉多选',
     datePicker: '日期选择器',
     timePicker: '时间选择器',
@@ -241,10 +246,10 @@ export default function Form({ bgColor }: FormProps) {
 
   // 根据飞书平台的 mode 状态决定是否显示配置面板
   // 创建状态和配置状态显示配置面板，展示状态和全屏状态不显示
-  const isConfig = mode === DashboardState.Config || mode === DashboardState.Create;
+  //const isConfig = mode === DashboardState.Config || mode === DashboardState.Create;
 
   // 临时设置：任何状态下都显示配置面板
-  //const isConfig = true;
+  const isConfig = true;
 
   // 检查字段是否应该显示（基于父级选项的关联关系）
   const isFieldVisible = (field: IFormField): boolean => {

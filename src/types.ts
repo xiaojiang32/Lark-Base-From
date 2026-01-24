@@ -47,6 +47,7 @@ export interface IOptionField extends IFormField {
   maxSelect?: number;
   allowCustom?: boolean;
   errorMessage?: string;
+  direction?: 'horizontal' | 'vertical'; // 新增方向配置，支持横向和纵向布局
 }
 
 export interface ISelectField extends IFormField {

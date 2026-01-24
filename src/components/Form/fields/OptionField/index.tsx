@@ -18,6 +18,7 @@ export default function OptionField({ field, value, onChange, error, disabled }:
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled || false}
+        direction={field.direction || 'horizontal'}
       >
         {field.options.map((option: IOptionItem) => (
           <Radio key={option.id} value={option.value || option.label}>
@@ -34,6 +35,7 @@ export default function OptionField({ field, value, onChange, error, disabled }:
         value={value || []}
         onChange={onChange}
         disabled={disabled || false}
+        direction={field.direction || 'horizontal'}
       >
         {field.options.map((option: IOptionItem) => (
           <Checkbox key={option.id} value={option.value || option.label}>
@@ -60,7 +62,14 @@ export default function OptionField({ field, value, onChange, error, disabled }:
   );
 
   const renderTag = () => (
-    <div className="tag-group" style={{ display: 'flex', justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end', flexWrap: 'wrap' }}>
+    <div className="tag-group" style={{ 
+      display: 'flex', 
+      justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end', 
+      flexDirection: field.direction || 'horizontal',
+      flexWrap: field.direction === 'vertical' ? 'nowrap' : 'wrap',
+      alignContent: 'flex-start',
+      gap: '8px'
+    }}>
       {field.options.map((option: IOptionItem) => {
         const isSelected = value === (option.value || option.label);
         return (
@@ -85,8 +94,6 @@ export default function OptionField({ field, value, onChange, error, disabled }:
         return renderCheckbox();
       case 'select':
         return renderSelect();
-      case 'tag':
-        return renderTag();
       default:
         return renderRadio();
     }

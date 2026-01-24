@@ -334,7 +334,17 @@ export default function FieldConfigPanel({ field, onUpdateField, onDeleteField, 
             optionList={[
               { value: 'radio', label: '单选（Radio）' },
               { value: 'checkbox', label: '多选（Checkbox）' },
-              { value: 'tag', label: '标签选择（Tag）' },
+            ]}
+          />
+        </div>
+        <div className="config-item">
+          <label>布局方向</label>
+          <Select
+            value={optionField.direction || 'horizontal'}
+            onChange={(value) => updateField({ direction: value })}
+            optionList={[
+              { value: 'horizontal', label: '横向' },
+              { value: 'vertical', label: '纵向' },
             ]}
           />
         </div>
@@ -1034,7 +1044,7 @@ export default function FieldConfigPanel({ field, onUpdateField, onDeleteField, 
             }}
           />
           <div style={{ fontSize: '12px', color: 'var(--ccm-chart-N600)', lineHeight: '1.5', marginTop: '8px' }}>
-            开启后可选择父级选项字段，当父级选项被选中时该字段才会显示。仅支持关联选项输入框类型的字段。
+            开启后可选择父级选项字段，当父级选项被选中时该字段才会显示。仅支持关联选项框类型的字段。
           </div>
         </div>
         {field.enableParentLink && (

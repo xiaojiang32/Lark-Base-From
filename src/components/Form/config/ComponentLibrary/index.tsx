@@ -13,7 +13,7 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
       type: 'text',
       name: '输入框',
       icon: '✏️',
-      description: '单行文本输入框',
+      description: '文本输入框',
       defaultConfig: {
         type: 'text',
         name: '输入框',
@@ -28,12 +28,12 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
     },
     {
       type: 'option',
-      name: '选项输入框',
+      name: '选项框',
       icon: '🔘',
-      description: '单选/多选/标签',
+      description: '单选/多选（支持关联）',
       defaultConfig: {
         type: 'option',
-        name: '选项输入框',
+        name: '选项框',
         required: false,
         order: 0,
         optionType: 'radio',
@@ -47,12 +47,12 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
     },
     {
       type: 'select',
-      name: '下拉选择',
+      name: '下拉单选',
       icon: '📋',
       description: '下拉单选框',
       defaultConfig: {
         type: 'select',
-        name: '下拉选择',
+        name: '下拉单选',
         required: false,
         order: 0,
         placeholder: '请选择',
