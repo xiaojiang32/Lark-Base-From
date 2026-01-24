@@ -59,7 +59,19 @@ export function useFormConfig() {
 
   const updateConfig = (res: any) => {
     if (res.customConfig) {
-      setConfig(res.customConfig as IFormConfig);
+      // 如果从飞书平台获取的配置缺少某些字段，使用默认配置补充
+      const defaultConfig = getDefaultFormConfig();
+      setConfig({
+        ...defaultConfig,
+        ...res.customConfig,
+        // 确保嵌套对象也被正确合并
+        submitButton: {
+          ...defaultConfig.submitButton,
+          ...res.customConfig.submitButton,
+        },
+        // 保留 fields，不使用默认值覆盖
+        fields: res.customConfig.fields || defaultConfig.fields,
+      } as IFormConfig);
     }
   };
 

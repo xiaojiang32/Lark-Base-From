@@ -62,7 +62,6 @@
 .time-picker-field,
 .date-time-picker-field,
 .collapse-group-field {
-  margin-bottom: 16px;
   
   &.field-top {
     display: flex;
@@ -121,7 +120,7 @@
 }
 
 .submit-button-container {
-  margin-top: 20px;
+  // 间距由 form-container 的 gap 属性控制
 }
 
 .config-panel {
@@ -298,13 +297,13 @@ body[theme-mode="dark"] .config-section:hover {
   .config-body {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
   }
 
   .config-item {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
   }
 
   .config-item label {
@@ -394,15 +393,15 @@ body[theme-mode="dark"] .config-section:hover {
 .config-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
 .config-group-title {
   grid-column: 1 / -1;
   font-size: 14px;
   font-weight: 600;
-  margin: 16px 0 4px 0;
+  margin: 12px 0 4px 0;
   color: var(--ccm-chart-N900);
   padding-bottom: 4px;
   border-bottom: 1px solid var(--divider);

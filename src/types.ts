@@ -144,6 +144,7 @@ export interface IFormConfig {
   showBorder: boolean;
   showShadow: boolean;
   borderRadius: number;
+  padding: number;
   borderColor?: string;
   borderWidth?: number;
   fields: IFormField[];

@@ -182,31 +182,34 @@ function SubmitConfigPanel({ config, setConfig, fields }: SubmitConfigPanelProps
         </div>
       </div>
 
-      <div className="config-section" style={{ gridColumn: '1 / -1' }}>
+      <div className="config-section" style={{ gridColumn: '1 / -1', padding: '2px', gap: '1px' }}>
         <label>请求体预览（JSON）</label>
         <Card
           style={{
-            marginTop: 8,
+            marginTop: 4,
             backgroundColor: 'var(--bg-body)',
             border: '1px solid var(--divider)',
             borderRadius: 4,
+            padding: '4px',
           }}
         >
           {fields && fields.length > 0 ? (
             <pre style={{
               margin: 0,
-              padding: 16,
+              padding: 12,
               fontSize: 13,
               fontFamily: '"Fira Code", "Consolas", "Monaco", "Courier New", monospace',
               backgroundColor: '#f5f5f5',
               color: '#24292e',
               overflow: 'auto',
-              maxHeight: 200,
+              maxHeight: 300,
               borderRadius: 4,
-              border: '1px solid #e0e0e',
+              border: '1px solid #e0e0e0',
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-all',
               lineHeight: 1.6,
+              width: '100%',
+              boxSizing: 'border-box',
             }}>
 {JSON.stringify(
   fields.reduce((body, field) => {

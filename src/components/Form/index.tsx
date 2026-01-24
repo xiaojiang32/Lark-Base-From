@@ -39,18 +39,27 @@ function GlobalConfigPanel({ config, setConfig, saveConfig }: any) {
             />
           </div>
           <div className="config-section">
-            <label>字段间距</label>
+            <label>组件间距</label>
             <InputNumber
               value={config.fieldSpacing}
-              onChange={(value) => setConfig({ ...config, fieldSpacing: value || 4 })}
+              onChange={(value) => setConfig({ ...config, fieldSpacing: value || 12 })}
               min={1}
-              max={16}
+              max={64}
             />
           </div>
         </div>
 
         <div className="config-group">
           <div className="config-group-title">样式</div>
+          <div className="config-section">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Switch
+                checked={config.showBorder}
+                onChange={(checked) => setConfig({ ...config, showBorder: checked })}
+              />
+              <span style={{ marginLeft: 8 }}>显示边框</span>
+            </div>
+          </div>
           <div className="config-section">
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Switch
@@ -67,6 +76,15 @@ function GlobalConfigPanel({ config, setConfig, saveConfig }: any) {
               onChange={(value) => setConfig({ ...config, borderRadius: value || 8 })}
               min={0}
               max={16}
+            />
+          </div>
+          <div className="config-section">
+            <label>边距</label>
+            <InputNumber
+              value={config.padding}
+              onChange={(value) => setConfig({ ...config, padding: value || 16 })}
+              min={0}
+              max={64}
             />
           </div>
         </div>
@@ -221,8 +239,6 @@ export default function Form({ bgColor }: FormProps) {
     setFormData(initialFormData);
   }, [config.fields]);
 
-// 临时设置：任何状态下都显示配置面板
-//const isConfig = true;
   // 根据飞书平台的 mode 状态决定是否显示配置面板
   // 创建状态和配置状态显示配置面板，展示状态和全屏状态不显示
   const isConfig = mode === DashboardState.Config || mode === DashboardState.Create;
@@ -692,8 +708,8 @@ export default function Form({ bgColor }: FormProps) {
           style={{
             width: getFormWidth(),
             alignItems: 'stretch',
-            padding: '16px',
-            border: '1px solid var(--divider)',
+            padding: `${config.padding}px`,
+            border: config.showBorder ? '1px solid var(--divider)' : 'none',
             boxShadow: config.showShadow ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none',
             borderRadius: `${config.borderRadius}px`,
             gap: `${config.fieldSpacing}px`,

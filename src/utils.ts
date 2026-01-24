@@ -189,7 +189,8 @@ export const getDefaultFormConfig = (): IFormConfig => {
  return {
     description: '',
     width: 'narrow',
-    fieldSpacing: 4,
+    fieldSpacing: 12,
+    padding: 16,
     showBorder: true,
     showShadow: true,
     borderRadius: 8,
