@@ -988,11 +988,11 @@ export default function FieldConfigPanel({ field, onUpdateField, onDeleteField, 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span>{childField.name} (ID: {childId})</span>
                     <Button
-                      type="danger"
+                      type="warning"
                       size="small"
                       onClick={() => handleRemoveChild(index)}
                     >
-                      删除
+                      退出
                     </Button>
                   </div>
                 </div>
