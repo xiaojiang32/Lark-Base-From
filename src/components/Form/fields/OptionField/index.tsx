@@ -65,7 +65,7 @@ export default function OptionField({ field, value, onChange, error, disabled }:
     <div className="tag-group" style={{ 
       display: 'flex', 
       justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end', 
-      flexDirection: field.direction || 'horizontal',
+      flexDirection: (field.direction || 'horizontal') === 'horizontal' ? 'row' : 'column',
       flexWrap: field.direction === 'vertical' ? 'nowrap' : 'wrap',
       alignContent: 'flex-start',
       gap: '8px'
