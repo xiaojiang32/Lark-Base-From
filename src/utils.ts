@@ -48,6 +48,10 @@ export const validateAlphanumeric = (value: string): boolean => {
 };
 
 export const validateField = (field: IFormField, value: any): { isValid: boolean; error?: string } => {
+  // 组合组件本身不参与验证，直接返回验证通过
+  if (field.type === 'composite') {
+    return { isValid: true };
+  }
   if (field.required && !value) {
     return { isValid: false, error: field.errorMessage || '此项为必填项' };
   }
@@ -182,16 +186,12 @@ export const validateField = (field: IFormField, value: any): { isValid: boolean
 };
 
 export const getDefaultFormConfig = (): IFormConfig => {
-  return {
-    title: '',
+ return {
     description: '',
     width: 'narrow',
-    align: 'left',
-    layoutMode: 'single',
     fieldSpacing: 4,
     showBorder: true,
     showShadow: true,
-    backgroundColor: 'var(--bg-body)',
     borderRadius: 8,
     fields: [
       {
@@ -221,6 +221,7 @@ export const getDefaultFormConfig = (): IFormConfig => {
       size: 'medium',
       successMessage: '提交成功',
       afterSubmit: 'reset',
+      width: 'auto',
     },
     submitConfig: {
       enabled: true,
@@ -235,6 +236,10 @@ export const getDefaultFormConfig = (): IFormConfig => {
 
 export const buildRequestBody = (formData: Record<string, any>, fields: IFormField[]): Record<string, any> => {
   return fields.reduce((body, field) => {
+    // 跳过组合组件本身，只处理非组合组件的字段
+    if (field.type === 'composite') {
+      return body;
+    }
     const value = formData[field.id];
     if (value !== undefined && value !== null && value !== '') {
       if (field.type === 'option' && Array.isArray(value)) {
@@ -267,6 +272,7 @@ export const buildUrlWithParams = (url: string, paramsConfig: Array<{ key: strin
     });
 
     if (formData) {
+      // 直接处理formData，跳过组合组件字段值的逻辑由调用者处理
       Object.entries(formData).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
           urlObj.searchParams.append(key, String(value));
@@ -297,7 +303,15 @@ export const submitHttpRequest = async (
     let body: string | undefined;
 
     if (submitConfig.method === 'GET') {
-      url = buildUrlWithParams(url, submitConfig.params, formData);
+      // 过滤掉组合组件的字段值
+      const filteredFormData = Object.entries(formData).reduce((acc, [key, value]) => {
+        const field = fields.find((f: IFormField) => f.id === key);
+        if (!field || field.type !== 'composite') {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as Record<string, any>);
+      url = buildUrlWithParams(url, submitConfig.params, filteredFormData);
     } else {
       const requestBody = buildRequestBody(formData, fields);
       body = JSON.stringify(requestBody);

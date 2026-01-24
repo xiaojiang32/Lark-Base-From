@@ -11,7 +11,6 @@ import MultiSelectField from './fields/MultiSelectField';
 import DatePickerField from './fields/DatePickerField';
 import TimePickerField from './fields/TimePickerField';
 import DateTimePickerField from './fields/DateTimePickerField';
-import CompositeField from './fields/CompositeField';
 import SubmitButton from './fields/SubmitButton';
 import ComponentLibrary from './config/ComponentLibrary';
 import FieldConfigPanel from './config/FieldConfigPanel';
@@ -30,10 +29,33 @@ function GlobalConfigPanel({ config, setConfig, saveConfig }: any) {
               value={config.width}
               onChange={(value) => setConfig({ ...config, width: value })}
               optionList={[
-                { value: 'narrow', label: '窄 (300px)' },
+                { value: 'narrow', label: '�?(300px)' },
                 { value: 'standard', label: '标准 (500px)' },
-                { value: 'wide', label: '宽 (700px)' },
+                { value: 'wide', label: '�?(700px)' },
                 { value: 'full', label: '全宽 (100%)' }
+              ]}
+            />
+          </div>
+          <div className="config-section">
+            <label>表单对齐</label>
+            <Select
+              value={config.align}
+              onChange={(value) => setConfig({ ...config, align: value })}
+              optionList={[
+                { value: 'left', label: '左对�? },
+                { value: 'center', label: '居中对齐' },
+                { value: 'right', label: '右对�? }
+              ]}
+            />
+          </div>
+          <div className="config-section">
+            <label>布局模式</label>
+            <Select
+              value={config.layoutMode}
+              onChange={(value) => setConfig({ ...config, layoutMode: value })}
+              optionList={[
+                { value: 'single', label: '单列布局' },
+                { value: 'double', label: '两列布局' }
               ]}
             />
           </div>
@@ -76,7 +98,10 @@ function GlobalConfigPanel({ config, setConfig, saveConfig }: any) {
             <label>按钮文本</label>
             <Input
               value={config.submitButton.text}
-              onChange={(value) => setConfig({ ...config, submitButton: { ...config.submitButton, text: value } })}
+              onChange={(value) => setConfig({
+                ...config,
+                submitButton: { ...config.submitButton, text: value }
+              })}
               maxLength={20}
             />
           </div>
@@ -84,42 +109,25 @@ function GlobalConfigPanel({ config, setConfig, saveConfig }: any) {
             <label>提交成功提示</label>
             <Input
               value={config.submitButton.successMessage}
-              onChange={(value) => setConfig({ ...config, submitButton: { ...config.submitButton, successMessage: value } })}
+              onChange={(value) => setConfig({
+                ...config,
+                submitButton: { ...config.submitButton, successMessage: value }
+              })}
               maxLength={50}
             />
           </div>
           <div className="config-section">
-            <label>提交后操作</label>
+            <label>提交后操�?/label>
             <Select
               value={config.submitButton.afterSubmit}
-              onChange={(value) => setConfig({ ...config, submitButton: { ...config.submitButton, afterSubmit: value } })}
+              onChange={(value) => setConfig({
+                ...config,
+                submitButton: { ...config.submitButton, afterSubmit: value }
+              })}
               optionList={[
                 { value: 'reset', label: '重置表单' },
                 { value: 'disable', label: '禁用表单' },
                 { value: 'keep', label: '保持表单' }
-              ]}
-            />
-          </div>
-          <div className="config-section">
-            <label>对齐方式</label>
-            <Select
-              value={config.submitButton.align || 'left'}
-              onChange={(value) => setConfig({ ...config, submitButton: { ...config.submitButton, align: value } })}
-              optionList={[
-                { value: 'left', label: '左对齐' },
-                { value: 'center', label: '居中对齐' },
-                { value: 'right', label: '右对齐' }
-              ]}
-            />
-          </div>
-          <div className="config-section">
-            <label>宽度</label>
-            <Select
-              value={config.submitButton.width || 'full'}
-              onChange={(value) => setConfig({ ...config, submitButton: { ...config.submitButton, width: value } })}
-              optionList={[
-                { value: 'auto', label: '自适应' },
-                { value: 'full', label: '占满' }
               ]}
             />
           </div>
@@ -135,14 +143,14 @@ function GlobalConfigPanel({ config, setConfig, saveConfig }: any) {
 
 function getFieldTypeName(type: string): string {
   const typeMap: Record<string, string> = {
-    text: '输入框',
-    option: '选项输入框',
+    text: '输入�?,
+
+    option: '选项输入�?,
     select: '下拉选择',
-    multiSelect: '下拉多选',
-    datePicker: '日期选择器',
-    timePicker: '时间选择器',
-    dateTimePicker: '日期时间选择器',
-    composite: '组合组件',
+    multiSelect: '下拉多�?,
+    datePicker: '日期选择�?,
+    timePicker: '时间选择�?,
+    dateTimePicker: '日期时间选择�?,
   };
   return typeMap[type] || type;
 }
@@ -215,18 +223,28 @@ export default function Form({ bgColor }: FormProps) {
         initialFormData[field.id] = (field as any).defaultValue || '';
       } else if (field.type === 'dateTimePicker') {
         initialFormData[field.id] = (field as any).defaultValue || '';
+      } else if (field.type === 'collapseGroup') {
+        const collapseField = field as any;
+        if (collapseField.maxSelect !== 1) {
+          initialFormData[field.id] = collapseField.options
+            .filter((opt: any) => opt.defaultChecked)
+            .map((opt: any) => opt.value || opt.label);
+        } else {
+          const defaultOption = collapseField.options.find((opt: any) => opt.defaultChecked);
+          initialFormData[field.id] = defaultOption ? (defaultOption.value || defaultOption.label) : '';
+        }
       }
     });
     setFormData(initialFormData);
   }, [config.fields]);
 
-// 临时设置：任何状态下都显示配置面板
+// 临时设置：任何状态下都显示配置面�?
 //const isConfig = true;
-  // 根据飞书平台的 mode 状态决定是否显示配置面板
+  // 根据飞书平台�?mode 状态决定是否显示配置面�?
   // 创建状态和配置状态显示配置面板，展示状态和全屏状态不显示
   //const isConfig = mode === DashboardState.Config || mode === DashboardState.Create;
 
-  // 临时设置：任何状态下都显示配置面板
+  // 临时设置：任何状态下都显示配置面�?
   const isConfig = true;
 
   // 检查字段是否应该显示（基于父级选项的关联关系）
@@ -236,7 +254,7 @@ export default function Form({ bgColor }: FormProps) {
       return true;
     }
 
-    // 获取父级字段的值
+    // 获取父级字段的�?
     const parentValue = formData[field.parentFieldId];
 
     // 如果父级字段没有值，则不显示
@@ -244,24 +262,14 @@ export default function Form({ bgColor }: FormProps) {
       return false;
     }
 
-    // 检查父级选项的值是否匹配
+    // 检查父级选项的值是否匹�?
     if (Array.isArray(parentValue)) {
-      // 多选情况：只要选中了匹配的选项就显示
+      // 多选情况：只要选中了匹配的选项就显�?
       return parentValue.includes(field.parentOptionValue);
     } else {
       // 单选情况：值匹配才显示
       return parentValue === field.parentOptionValue;
     }
-  };
-
-  // 获取所有被组合组件引用的子组件ID
-  const getCompositeChildIds = (): string[] => {
-    const compositeFields = config.fields.filter(f => f.type === 'composite') as any[];
-    const childIds: string[] = [];
-    compositeFields.forEach(compositeField => {
-      childIds.push(...compositeField.children);
-    });
-    return childIds;
   };
 
   const handleFieldChange = (fieldId: string, value: any) => {
@@ -294,18 +302,16 @@ export default function Form({ bgColor }: FormProps) {
     const newField: IFormField = {
       id: generateId(type),
       type,
-      name: '新字段',
+      name: '新字�?,
       required: false,
       order: config.fields.length,
       labelSpacing: 8,
-      align: 'left',
-      width: 'auto',
     };
 
     switch (type) {
       case 'text':
         Object.assign(newField, {
-          placeholder: '请输入',
+          placeholder: '请输�?,
           maxLength: 200,
           inputType: 'none',
         });
@@ -358,11 +364,14 @@ export default function Form({ bgColor }: FormProps) {
           timeInterval: 30,
         });
         break;
-      case 'composite':
+      case 'collapseGroup' as FieldType:
         Object.assign(newField, {
-          children: [],
-          widthRatios: '1:1',
-          maxChildren: config.width === 'full' ? 8 : 4,
+          direction: 'down',
+          maxSelect: 1,
+          options: [
+            { id: generateId('collapseGroup'), label: '选项1', order: 0 },
+            { id: generateId('collapseGroup'), label: '选项2', order: 1 },
+          ],
         });
         break;
     }
@@ -418,7 +427,7 @@ export default function Form({ bgColor }: FormProps) {
   const handleSubmit = async () => {
     const isValid = validateAll(formData);
     if (!isValid) {
-      Toast.error('请检查表单填写是否正确');
+      Toast.error('请检查表单填写是否正�?);
       scrollToFirstError();
       return;
     }
@@ -468,6 +477,16 @@ export default function Form({ bgColor }: FormProps) {
         initialFormData[field.id] = (field as any).defaultValue || '';
       } else if (field.type === 'dateTimePicker') {
         initialFormData[field.id] = (field as any).defaultValue || '';
+      } else if (field.type === 'collapseGroup') {
+        const collapseField = field as any;
+        if (collapseField.maxSelect !== 1) {
+          initialFormData[field.id] = collapseField.options
+            .filter((opt: any) => opt.defaultChecked)
+            .map((opt: any) => opt.value || opt.label);
+        } else {
+          const defaultOption = collapseField.options.find((opt: any) => opt.defaultChecked);
+          initialFormData[field.id] = defaultOption ? (defaultOption.value || defaultOption.label) : '';
+        }
       }
     });
     setFormData(initialFormData);
@@ -482,7 +501,7 @@ export default function Form({ bgColor }: FormProps) {
     switch (field.type) {
       case 'text':
         return (
-          <div key={field.id} data-field-id={field.id} style={{ textAlign: field.align || 'left' }}>
+          <div key={field.id} data-field-id={field.id}>
             <TextField
               field={field as any}
               value={value || ''}
@@ -495,7 +514,7 @@ export default function Form({ bgColor }: FormProps) {
         );
       case 'option':
         return (
-          <div key={field.id} data-field-id={field.id} style={{ textAlign: field.align || 'left' }}>
+          <div key={field.id} data-field-id={field.id}>
             <OptionField
               field={field as any}
               value={value}
@@ -507,7 +526,7 @@ export default function Form({ bgColor }: FormProps) {
         );
       case 'select':
         return (
-          <div key={field.id} data-field-id={field.id} style={{ textAlign: field.align || 'left' }}>
+          <div key={field.id} data-field-id={field.id}>
             <SelectField
               field={field as any}
               value={value || ''}
@@ -519,7 +538,7 @@ export default function Form({ bgColor }: FormProps) {
         );
       case 'multiSelect':
         return (
-          <div key={field.id} data-field-id={field.id} style={{ textAlign: field.align || 'left' }}>
+          <div key={field.id} data-field-id={field.id}>
             <MultiSelectField
               field={field as any}
               value={value || []}
@@ -531,7 +550,7 @@ export default function Form({ bgColor }: FormProps) {
         );
       case 'datePicker':
         return (
-          <div key={field.id} data-field-id={field.id} style={{ textAlign: field.align || 'left' }}>
+          <div key={field.id} data-field-id={field.id}>
             <DatePickerField
               field={field as any}
               value={value || ''}
@@ -543,7 +562,7 @@ export default function Form({ bgColor }: FormProps) {
         );
       case 'timePicker':
         return (
-          <div key={field.id} data-field-id={field.id} style={{ textAlign: field.align || 'left' }}>
+          <div key={field.id} data-field-id={field.id}>
             <TimePickerField
               field={field as any}
               value={value || ''}
@@ -555,7 +574,7 @@ export default function Form({ bgColor }: FormProps) {
         );
       case 'dateTimePicker':
         return (
-          <div key={field.id} data-field-id={field.id} style={{ textAlign: field.align || 'left' }}>
+          <div key={field.id} data-field-id={field.id}>
             <DateTimePickerField
               field={field as any}
               value={value || ''}
@@ -565,18 +584,15 @@ export default function Form({ bgColor }: FormProps) {
             />
           </div>
         );
-      case 'composite':
+      case 'richText':
         return (
-          <div key={field.id} data-field-id={field.id} style={{ width: '100%' }}>
-            <CompositeField
+          <div key={field.id} data-field-id={field.id}>
+            <RichTextField
               field={field as any}
-              allFields={config.fields}
-              formData={formData}
-              handleFieldChange={handleFieldChange}
-              handleFieldBlur={handleFieldBlur}
-              errors={errors}
-              isFormDisabled={isFormDisabled}
-              isFieldVisible={isFieldVisible}
+              value={value || ''}
+              onChange={(val) => handleFieldChange(field.id, val)}
+              error={error}
+              disabled={isFormDisabled}
             />
           </div>
         );
@@ -600,26 +616,40 @@ export default function Form({ bgColor }: FormProps) {
     }
   };
 
+  const getFormAlign = () => {
+    switch (config.align) {
+      case 'left':
+        return 'flex-start';
+      case 'center':
+        return 'center';
+      case 'right':
+        return 'flex-end';
+      default:
+        return 'center';
+    }
+  };
+
   return (
     <main style={{ backgroundColor: bgColor }} className={classnames({ 'main-config': isConfig, 'main': true })}>
       <div className="content">
         <div
-          className="form-container"
+          className={`form-container ${config.layoutMode === 'double' ? 'form-container-double' : ''}`}
           style={{
             width: getFormWidth(),
-            alignItems: 'stretch',
+            alignItems: getFormAlign(),
             padding: '16px',
             border: '1px solid var(--divider)',
             boxShadow: config.showShadow ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none',
             borderRadius: `${config.borderRadius}px`,
             gap: `${config.fieldSpacing}px`,
-            display: 'flex',
-            flexDirection: 'column',
+            display: config.layoutMode === 'double' ? 'grid' : 'flex',
+            gridTemplateColumns: config.layoutMode === 'double' ? '1fr 1fr' : 'auto',
+            flexDirection: config.layoutMode === 'double' ? 'row' : 'column',
           }}
         >
 
           {config.description && <p className="form-description">{config.description}</p>}
-          {config.fields.sort((a, b) => a.order - b.order).filter(field => isFieldVisible(field) && !getCompositeChildIds().includes(field.id)).map((field) => renderField(field))}
+          {config.fields.sort((a, b) => a.order - b.order).filter(isFieldVisible).map((field) => renderField(field))}
           <SubmitButton
             config={config.submitButton}
             onClick={handleSubmit}
@@ -685,7 +715,7 @@ export default function Form({ bgColor }: FormProps) {
         okText="确定"
         cancelText="取消"
       >
-        确定要删除这个字段吗？
+        确定要删除这个字段吗�?
       </Modal>
     </main>
   );

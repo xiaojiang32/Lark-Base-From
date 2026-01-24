@@ -56,35 +56,40 @@ export default function DatePickerField({ field, value, onChange, error, disable
   };
 
   return (
-    <div className="date-picker-field field-top">
+    <div className="date-picker-field field-top" style={{ textAlign: field.align || 'left' }}>
       <label 
         className="date-picker-field-label field-top-label"
-        style={{ marginBottom: `${labelSpacing}px` }}
+        style={{ 
+          marginBottom: `${labelSpacing}px`,
+          fontSize: `${field.labelFontSize || 14}px`
+        }}
       >
         {field.name}
         {field.required && <span className="required-mark">*</span>}
       </label>
-      <DatePicker
-        placeholder={field.placeholder || '请选择日期'}
-        value={parseDate(value) || undefined}
-        onChange={(date) => handleDateChange(date as Date | null | undefined)}
-        disabled={disabled || false}
-        disabledDate={(date) => {
-          if (!date) return false;
-          const minDate = field.minDate ? parseDate(field.minDate) : null;
-          const maxDate = field.maxDate ? parseDate(field.maxDate) : null;
-          
-          if (minDate && date < minDate) return true;
-          if (maxDate && date > maxDate) return true;
-          
-          return false;
-        }}
-        error={!!error}
-        style={{ width: '100%' }}
-        aria-label={`${field.name} ${field.placeholder || '请选择日期'}`}
-        aria-required={field.required === true}
-        aria-invalid={!!error}
-      />
+      <div style={{ display: 'flex', justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end' }}>
+        <DatePicker
+          placeholder={field.placeholder || '请选择日期'}
+          value={parseDate(value) || undefined}
+          onChange={(date) => handleDateChange(date as Date | null | undefined)}
+          disabled={disabled || false}
+          disabledDate={(date) => {
+            if (!date) return false;
+            const minDate = field.minDate ? parseDate(field.minDate) : null;
+            const maxDate = field.maxDate ? parseDate(field.maxDate) : null;
+            
+            if (minDate && date < minDate) return true;
+            if (maxDate && date > maxDate) return true;
+            
+            return false;
+          }}
+
+          style={{ width: field.width === 'full' ? '100%' : 'auto' }}
+          aria-label={`${field.name} ${field.placeholder || '请选择日期'}`}
+          aria-required={field.required === true}
+          aria-invalid={!!error}
+        />
+      </div>
       {error && <div className="error-message">{error}</div>}
     </div>
   );

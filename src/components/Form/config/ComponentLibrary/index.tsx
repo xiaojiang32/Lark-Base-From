@@ -22,6 +22,8 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
         placeholder: '请输入',
         maxLength: 200,
         inputType: 'none',
+        align: 'left',
+        width: 'auto',
       },
     },
     {
@@ -39,6 +41,8 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
           { id: generateId(), label: '选项1', order: 0 },
           { id: generateId(), label: '选项2', order: 1 },
         ],
+        align: 'left',
+        width: 'auto',
       },
     },
     {
@@ -56,6 +60,8 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
           { id: generateId(), label: '选项1', order: 0 },
           { id: generateId(), label: '选项2', order: 1 },
         ],
+        align: 'left',
+        width: 'auto',
       },
     },
     {
@@ -73,6 +79,8 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
           { id: generateId(), label: '选项1', order: 0 },
           { id: generateId(), label: '选项2', order: 1 },
         ],
+        align: 'left',
+        width: 'auto',
       },
     },
     {
@@ -87,6 +95,8 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
         order: 0,
         placeholder: '请选择日期',
         dateFormat: 'YYYY-MM-DD',
+        align: 'left',
+        width: 'auto',
       },
     },
     {
@@ -102,6 +112,8 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
         placeholder: '请选择时间',
         timeFormat: 'HH:mm',
         timeInterval: 30,
+        align: 'left',
+        width: 'auto',
       },
     },
     {
@@ -118,6 +130,23 @@ export default function ComponentLibrary({ onAddField }: ComponentLibraryProps) 
         dateFormat: 'YYYY-MM-DD',
         timeFormat: 'HH:mm',
         timeInterval: 30,
+        align: 'left',
+        width: 'auto',
+      },
+    },
+    {
+      type: 'composite',
+      name: '组合组件',
+      icon: '📦',
+      description: '组合其他组件，支持多列布局',
+      defaultConfig: {
+        type: 'composite',
+        name: '组合组件',
+        required: false,
+        order: 0,
+        children: [],
+        widthRatios: '1:1',
+        maxChildren: 4,
       },
     },
   ];

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Select, Switch, Button, Card, Collapse, InputNumber, DatePicker, TimePicker } from '@douyinfe/semi-ui';
-import { IFormField, ITextField, IOptionField, ISelectField, IMultiSelectField, IDatePickerField, ITimePickerField, IDateTimePickerField, IOptionItem, FieldType } from '../../../../types';
+import { IFormField, ITextField, IOptionField, ISelectField, IMultiSelectField, IDatePickerField, ITimePickerField, IDateTimePickerField, IOptionItem, FieldType, FormAlign, FormFieldWidth } from '../../../../types';
 import { generateId } from '../../../../utils';
 
 const parseDate = (dateStr: string, format: string = 'YYYY-MM-DD'): Date | null => {
@@ -184,16 +184,20 @@ export default function FieldConfigPanel({ field, onUpdateField, onDeleteField, 
 
   const renderCommonConfig = () => (
     <>
-      <div className="config-item">
-        <label>组件ID</label>
-        <Input
-          value={tempId}
-          onChange={(value) => handleIdChange(value)}
-          onBlur={(e) => handleIdBlur((e.target as HTMLInputElement).value)}
-          placeholder="组件ID"
-        />
-        {idError && <div className="error-message">{idError}</div>}
-      </div>
+      {/* 组件ID配置，组合组件不需要 */}
+      {field.type !== 'composite' && (
+        <div className="config-item">
+          <label>组件ID</label>
+          <Input
+            value={tempId}
+            onChange={(value) => handleIdChange(value)}
+            onBlur={(e) => handleIdBlur((e.target as HTMLInputElement).value)}
+            placeholder="组件ID"
+          />
+          {idError && <div className="error-message">{idError}</div>}
+        </div>
+      )}
+      {/* 字段名称配置，组合组件需要 */}
       <div className="config-item">
         <label>字段名称</label>
         <Input
@@ -204,16 +208,54 @@ export default function FieldConfigPanel({ field, onUpdateField, onDeleteField, 
         />
       </div>
       <div className="config-item">
-        <label>是否必填</label>
-        <Switch
-          checked={field.required}
-          onChange={(checked) => updateField({ required: checked })}
+        <label>字段名称字体大小</label>
+        <InputNumber
+          value={field.labelFontSize || 14}
+          onChange={(value) => updateField({ labelFontSize: value })}
+          min={8}
+          max={32}
+          step={1}
         />
       </div>
+      {/* 对齐方式配置，组合组件不需要 */}
+      {field.type !== 'composite' && (
+        <>
+          <div className="config-item">
+            <label>对齐方式</label>
+            <Select
+              value={field.align || 'left'}
+              onChange={(value) => updateField({ align: value as FormAlign })}
+              optionList={[
+                { value: 'left', label: '左对齐' },
+                { value: 'center', label: '居中对齐' },
+                { value: 'right', label: '右对齐' }
+              ]}
+            />
+          </div>
+          <div className="config-item">
+            <label>宽度</label>
+            <Select
+              value={field.width || 'auto'}
+              onChange={(value) => updateField({ width: value as FormFieldWidth })}
+              optionList={[
+                { value: 'auto', label: '自适应' },
+                { value: 'full', label: '占满' }
+              ]}
+            />
+          </div>
+          <div className="config-item">
+            <label>是否必填</label>
+            <Switch
+              checked={field.required}
+              onChange={(checked) => updateField({ required: checked })}
+            />
+          </div>
+        </>
+      )}
       <div className="config-item">
         <label>标签间距</label>
         <InputNumber
-          value={field.labelSpacing || 8}
+          value={field.labelSpacing ?? 8}
           onChange={(value) => updateField({ labelSpacing: value })}
           min={0}
           max={32}
@@ -822,10 +864,13 @@ export default function FieldConfigPanel({ field, onUpdateField, onDeleteField, 
     );
   };
 
+
+
   const renderFieldConfig = () => {
     switch (field.type) {
       case 'text':
         return renderTextFieldConfig();
+
       case 'option':
         return renderOptionFieldConfig();
       case 'select':
@@ -840,9 +885,133 @@ export default function FieldConfigPanel({ field, onUpdateField, onDeleteField, 
         return renderDateTimePickerFieldConfig();
       case 'collapseGroup' as FieldType:
         return renderCollapseGroupFieldConfig();
+      case 'composite':
+        return renderCompositeFieldConfig();
       default:
         return null;
     }
+  };
+
+  const renderCompositeFieldConfig = () => {
+    const compositeField = field as any;
+    
+    // 获取可用的子组件列表（排除组合组件和当前组合组件本身）
+    const availableFields = allFields.filter(f => 
+      f.id !== field.id && 
+      f.type !== 'composite' && 
+      !compositeField.children.includes(f.id)
+    );
+
+    // 添加子组件
+    const handleAddChild = (childId: string) => {
+      if (compositeField.children.length >= compositeField.maxChildren) {
+        return;
+      }
+      
+      const newChildren = [...compositeField.children, childId];
+      let newRatios = compositeField.widthRatios;
+      
+      // 自动调整宽度比例
+      if (newChildren.length > 1) {
+        const ratios = compositeField.widthRatios.split(':').map((r: string) => r.trim());
+        if (ratios.length === newChildren.length - 1) {
+          newRatios = [...ratios, '1'].join(':');
+        }
+      }
+      
+      updateField({ children: newChildren, widthRatios: newRatios });
+    };
+
+    // 移除子组件
+    const handleRemoveChild = (index: number) => {
+      const newChildren = compositeField.children.filter((_: any, i: number) => i !== index);
+      let newRatios = compositeField.widthRatios;
+      
+      // 自动调整宽度比例
+      if (newChildren.length > 0) {
+        const ratios = compositeField.widthRatios.split(':').map((r: string) => r.trim());
+        if (ratios.length === newChildren.length + 1) {
+          newRatios = ratios.filter((_: any, i: number) => i !== index).join(':');
+        }
+      }
+      
+      updateField({ children: newChildren, widthRatios: newRatios });
+    };
+
+    // 更新宽度比例
+    const handleUpdateRatios = (ratios: string) => {
+      updateField({ widthRatios: ratios });
+    };
+
+    // 获取子组件信息
+    const getChildFieldInfo = (childId: string) => {
+      return allFields.find(f => f.id === childId);
+    };
+
+    return (
+      <>
+        <div className="config-item">
+          <label>组件占比</label>
+          <Input
+            value={compositeField.widthRatios}
+            onChange={(value) => handleUpdateRatios(value)}
+            placeholder="例如: 1:1:1, 2:1, auto:1"
+            maxLength={50}
+          />
+          <div style={{ fontSize: '12px', color: 'var(--ccm-chart-N600)', marginTop: '8px' }}>
+            支持格式: "1:1:1" (等宽), "2:1" (比例), "auto:1" (自适应)
+          </div>
+        </div>
+        
+        <div className="config-item">
+          <div className="options-header">
+              <label>子组件管理</label>
+              <Select
+                value={undefined}
+                placeholder="添加子组件"
+                onSelect={(value) => value && handleAddChild(value as string)}
+                optionList={availableFields.map(f => ({
+                  value: f.id,
+                  label: f.name
+                }))}
+                style={{ marginLeft: '8px', width: '200px' }}
+              />
+            </div>
+          
+          <div className="options-list">
+            {compositeField.children.map((childId: string, index: number) => {
+              const childField = getChildFieldInfo(childId);
+              if (!childField) return null;
+              
+              return (
+                <div key={childId} className="option-item">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span>{childField.name} (ID: {childId})</span>
+                    <Button
+                      type="danger"
+                      size="small"
+                      onClick={() => handleRemoveChild(index)}
+                    >
+                      删除
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          {compositeField.children.length === 0 && (
+            <div style={{ fontSize: '12px', color: 'var(--ccm-chart-N600)', marginTop: '8px' }}>
+              暂无子组件，请添加子组件
+            </div>
+          )}
+          
+          <div style={{ fontSize: '12px', color: 'var(--ccm-chart-N600)', marginTop: '8px' }}>
+            已添加 {compositeField.children.length} / {compositeField.maxChildren} 个子组件
+          </div>
+        </div>
+      </>
+    );
   };
 
   const renderParentLinkConfig = () => {
@@ -916,8 +1085,10 @@ export default function FieldConfigPanel({ field, onUpdateField, onDeleteField, 
     <div className="field-config-panel">
       <Card className="config-card">
         <div className="config-body">
+          {/* 渲染通用配置，组合组件也需要字段名称配置 */}
           {renderCommonConfig()}
           {renderFieldConfig()}
+          {/* 组合组件支持父级关联配置 */}
           {renderParentLinkConfig()}
         </div>
       </Card>

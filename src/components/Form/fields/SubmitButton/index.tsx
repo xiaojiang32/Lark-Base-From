@@ -53,8 +53,18 @@ export default function SubmitButton({ config, onClick, disabled, loading }: Sub
     }
   };
 
+  // 根据配置决定是否使用block属性
+  const isBlock = config.width === 'full';
+
   return (
-    <div className="submit-button-container">
+    <div 
+      className="submit-button-container"
+      style={{
+        display: 'flex',
+        justifyContent: config.align || 'left',
+        width: '100%'
+      }}
+    >
       <Button
         theme={getTheme() as any}
         type={getType() as any}
@@ -62,7 +72,10 @@ export default function SubmitButton({ config, onClick, disabled, loading }: Sub
         onClick={onClick}
         disabled={disabled}
         loading={loading}
-        block
+        block={isBlock}
+        style={{
+          width: isBlock ? '100%' : 'auto'
+        }}
       >
         {config.text}
       </Button>

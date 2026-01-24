@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Select, Button, InputNumber, Card, Typography } from '@douyinfe/semi-ui';
-import { ISubmitConfig, IFormField } from '../../../types';
+import { ISubmitConfig, IFormField } from '../../../../types';
 
 const { Text } = Typography;
 
@@ -35,7 +35,7 @@ function SubmitConfigPanel({ config, setConfig, fields }: SubmitConfigPanelProps
   };
 
   const removeParam = (index: number) => {
-    const newParams = (submitConfig?.params || []).filter((_, i) => i !== index);
+    const newParams = (submitConfig?.params || []).filter((_: any, i: number) => i !== index);
     updateConfig({ params: newParams });
   };
 
@@ -51,7 +51,7 @@ function SubmitConfigPanel({ config, setConfig, fields }: SubmitConfigPanelProps
   };
 
   const removeHeader = (index: number) => {
-    const newHeaders = (submitConfig?.headers || []).filter((_, i) => i !== index);
+    const newHeaders = (submitConfig?.headers || []).filter((_: any, i: number) => i !== index);
     updateConfig({ headers: newHeaders });
   };
 
@@ -89,7 +89,7 @@ function SubmitConfigPanel({ config, setConfig, fields }: SubmitConfigPanelProps
             添加参数
           </Button>
         </div>
-        {(submitConfig?.params || []).map((param, index) => (
+        {(submitConfig?.params || []).map((param: { key: string; value: string }, index: number) => (
           <div key={index} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
             <Input
               placeholder="参数名"
@@ -125,7 +125,7 @@ function SubmitConfigPanel({ config, setConfig, fields }: SubmitConfigPanelProps
             添加请求头
           </Button>
         </div>
-        {(submitConfig?.headers || []).map((header, index) => (
+        {(submitConfig?.headers || []).map((header: { key: string; value: string }, index: number) => (
           <div key={index} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
             <Input
               placeholder="请求头名"
@@ -210,8 +210,11 @@ function SubmitConfigPanel({ config, setConfig, fields }: SubmitConfigPanelProps
             }}>
 {JSON.stringify(
   fields.reduce((body, field) => {
-    const fieldId = field.id;
-    body[fieldId] = "";
+    // 跳过组合组件字段，只包含非组合组件字段
+    if (field.type !== 'composite') {
+      const fieldId = field.id;
+      body[fieldId] = "";
+    }
     return body;
   }, {} as Record<string, string>),
   null,

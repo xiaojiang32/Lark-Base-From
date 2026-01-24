@@ -1,11 +1,17 @@
 export interface IFormField {
   id: string;
-  type: 'text' | 'option' | 'select' | 'multiSelect' | 'datePicker' | 'timePicker' | 'dateTimePicker';
+  type: 'text' | 'option' | 'select' | 'multiSelect' | 'datePicker' | 'timePicker' | 'dateTimePicker' | 'composite';
   name: string;
   required: boolean;
   order: number;
   errorMessage?: string;
   labelSpacing?: number;
+  // 字段名称字体大小
+  labelFontSize?: number;
+  // 对齐方式
+  align?: FormAlign;
+  // 字段宽度
+  width?: FormFieldWidth;
   // 是否启用父级关联
   enableParentLink?: boolean;
   // 父级选项字段ID（如果该字段是某个选项的子级字段）
@@ -14,13 +20,19 @@ export interface IFormField {
   parentOptionValue?: string;
 }
 
+export interface ICompositeField extends IFormField {
+  type: 'composite';
+  children: string[];
+  widthRatios: string;
+  maxChildren: number;
+}
+
 export interface ITextField extends IFormField {
   type: 'text';
   placeholder?: string;
   defaultValue?: string;
   maxLength?: number;
   inputType?: 'none' | 'number' | 'letter' | 'alphanumeric' | 'email' | 'phone' | 'url';
-  widthMode?: 'auto' | 'fixed' | 'fill';
   validationRules?: Array<'phone' | 'email' | 'url' | 'regex' | 'custom'>;
   customRegex?: string;
   errorMessage?: string;
@@ -88,6 +100,8 @@ export interface IDateTimePickerField extends IFormField {
   errorMessage?: string;
 }
 
+
+
 export interface IOptionItem {
   id: string;
   label: string;
@@ -105,6 +119,8 @@ export interface ISubmitButton {
   size: 'small' | 'medium' | 'large';
   successMessage: string;
   afterSubmit: 'reset' | 'disable' | 'keep';
+  align?: FormAlign;
+  width?: FormFieldWidth;
 }
 
 export interface ISubmitConfig {
@@ -118,18 +134,15 @@ export interface ISubmitConfig {
 
 export type FormWidth = 'narrow' | 'standard' | 'wide' | 'full';
 export type FormAlign = 'left' | 'center' | 'right';
+export type FormFieldWidth = 'auto' | 'full';
 export type FormLayoutMode = 'single' | 'double';
 
 export interface IFormConfig {
-  title?: string;
   description?: string;
   width: FormWidth;
-  align: FormAlign;
-  layoutMode: FormLayoutMode;
   fieldSpacing: number;
   showBorder: boolean;
   showShadow: boolean;
-  backgroundColor: string;
   borderRadius: number;
   borderColor?: string;
   borderWidth?: number;
@@ -170,7 +183,7 @@ export interface IFieldConfig {
   order: number;
 }
 
-export type FieldType = 'text' | 'option' | 'select' | 'multiSelect' | 'datePicker' | 'timePicker' | 'dateTimePicker';
+export type FieldType = 'text' | 'option' | 'select' | 'multiSelect' | 'datePicker' | 'timePicker' | 'dateTimePicker' | 'composite';
 
 export interface ComponentLibraryItem {
   type: FieldType;

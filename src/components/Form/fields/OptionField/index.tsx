@@ -13,48 +13,54 @@ interface OptionFieldProps {
 export default function OptionField({ field, value, onChange, error, disabled }: OptionFieldProps) {
   const labelSpacing = field.labelSpacing || 8;
   const renderRadio = () => (
-    <Radio.Group
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      disabled={disabled || false}
-    >
-      {field.options.map((option: IOptionItem) => (
-        <Radio key={option.id} value={option.value || option.label}>
-          {option.label}
-        </Radio>
-      ))}
-    </Radio.Group>
+    <div style={{ display: 'flex', justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end' }}>
+      <Radio.Group
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled || false}
+      >
+        {field.options.map((option: IOptionItem) => (
+          <Radio key={option.id} value={option.value || option.label}>
+            {option.label}
+          </Radio>
+        ))}
+      </Radio.Group>
+    </div>
   );
 
   const renderCheckbox = () => (
-    <Checkbox.Group
-      value={value || []}
-      onChange={onChange}
-      disabled={disabled || false}
-    >
-      {field.options.map((option: IOptionItem) => (
-        <Checkbox key={option.id} value={option.value || option.label}>
-          {option.label}
-        </Checkbox>
-      ))}
-    </Checkbox.Group>
+    <div style={{ display: 'flex', justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end' }}>
+      <Checkbox.Group
+        value={value || []}
+        onChange={onChange}
+        disabled={disabled || false}
+      >
+        {field.options.map((option: IOptionItem) => (
+          <Checkbox key={option.id} value={option.value || option.label}>
+            {option.label}
+          </Checkbox>
+        ))}
+      </Checkbox.Group>
+    </div>
   );
 
   const renderSelect = () => (
-    <Select
-      value={value}
-      onChange={onChange}
-      disabled={disabled || false}
-      optionList={field.options.map((option: IOptionItem) => ({
-        value: option.value || option.label,
-        label: option.label,
-      }))}
-      style={{ width: '100%' }}
-    />
+    <div style={{ display: 'flex', justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end' }}>
+      <Select
+          value={value}
+          onChange={onChange}
+          disabled={disabled || false}
+          optionList={field.options.map((option: IOptionItem) => ({
+            value: option.value || option.label,
+            label: option.label,
+          }))}
+          style={{ width: field.width === 'full' ? '100%' : 'auto' }}
+        />
+    </div>
   );
 
   const renderTag = () => (
-    <div className="tag-group">
+    <div className="tag-group" style={{ display: 'flex', justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end', flexWrap: 'wrap' }}>
       {field.options.map((option: IOptionItem) => {
         const isSelected = value === (option.value || option.label);
         return (
@@ -87,10 +93,13 @@ export default function OptionField({ field, value, onChange, error, disabled }:
   };
 
   return (
-    <div className="option-field field-top">
+    <div className="option-field field-top" style={{ textAlign: field.align || 'left' }}>
       <label 
         className="option-field-label field-top-label"
-        style={{ marginBottom: `${labelSpacing}px` }}
+        style={{ 
+          marginBottom: `${labelSpacing}px`,
+          fontSize: `${field.labelFontSize || 14}px`
+        }}
       >
         {field.name}
         {field.required && <span className="required-mark">*</span>}

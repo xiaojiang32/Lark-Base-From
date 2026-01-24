@@ -54,27 +54,32 @@ export default function TimePickerField({ field, value, onChange, error, disable
   };
 
   return (
-    <div className="time-picker-field field-top">
+    <div className="time-picker-field field-top" style={{ textAlign: field.align || 'left' }}>
       <label 
         className="time-picker-field-label field-top-label"
-        style={{ marginBottom: `${labelSpacing}px` }}
+        style={{ 
+          marginBottom: `${labelSpacing}px`,
+          fontSize: `${field.labelFontSize || 14}px`
+        }}
       >
         {field.name}
         {field.required && <span className="required-mark">*</span>}
       </label>
-      <TimePicker
-        placeholder={field.placeholder || '请选择时间'}
-        value={parseTime(value) || undefined}
-        onChange={(date) => handleTimeChange(date as Date | null | undefined)}
-        disabled={disabled || false}
-        format={field.timeFormat || 'HH:mm'}
-        minuteStep={field.timeInterval || 30}
-        error={!!error}
-        style={{ width: '100%' }}
-        aria-label={`${field.name} ${field.placeholder || '请选择时间'}`}
-        aria-required={field.required === true}
-        aria-invalid={!!error}
-      />
+      <div style={{ display: 'flex', justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end' }}>
+        <TimePicker
+          placeholder={field.placeholder || '请选择时间'}
+          value={parseTime(value) || undefined}
+          onChange={(date) => handleTimeChange(date as Date | null | undefined)}
+          disabled={disabled || false}
+          format={field.timeFormat || 'HH:mm'}
+          minuteStep={field.timeInterval || 30}
+          error={!!error}
+          style={{ width: field.width === 'full' ? '100%' : 'auto' }}
+          aria-label={`${field.name} ${field.placeholder || '请选择时间'}`}
+          aria-required={field.required === true}
+          aria-invalid={!!error}
+        />
+      </div>
       {error && <div className="error-message">{error}</div>}
     </div>
   );

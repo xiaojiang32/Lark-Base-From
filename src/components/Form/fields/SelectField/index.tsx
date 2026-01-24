@@ -19,28 +19,33 @@ export default function SelectField({ field, value, onChange, error, disabled }:
   }));
 
   return (
-    <div className="select-field field-top">
+    <div className="select-field field-top" style={{ textAlign: field.align || 'left' }}>
       <label 
         className="select-field-label field-top-label"
-        style={{ marginBottom: `${labelSpacing}px` }}
+        style={{ 
+          marginBottom: `${labelSpacing}px`,
+          fontSize: `${field.labelFontSize || 14}px`
+        }}
       >
         {field.name}
         {field.required && <span className="required-mark">*</span>}
       </label>
-      <Select
-        placeholder={field.placeholder || '请选择'}
-        value={value}
-        onChange={(val) => onChange(val as string)}
-        disabled={disabled || false}
-        optionList={optionList}
-        filter
-        showClear
-        error={!!error}
-        style={{ width: '100%' }}
-        aria-label={`${field.name} ${field.placeholder || '请选择'}`}
-        aria-required={field.required === true}
-        aria-invalid={!!error}
-      />
+      <div style={{ display: 'flex', justifyContent: (field.align || 'left') === 'left' ? 'flex-start' : (field.align || 'left') === 'center' ? 'center' : 'flex-end' }}>
+        <Select
+          placeholder={field.placeholder || '请选择'}
+          value={value}
+          onChange={(val) => onChange(val as string)}
+          disabled={disabled || false}
+          optionList={optionList}
+          filter
+          showClear
+
+          style={{ width: field.width === 'full' ? '100%' : 'auto' }}
+          aria-label={`${field.name} ${field.placeholder || '请选择'}`}
+          aria-required={field.required === true}
+          aria-invalid={!!error}
+        />
+      </div>
       {error && <div className="error-message">{error}</div>}
     </div>
   );
