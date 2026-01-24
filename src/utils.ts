@@ -241,12 +241,10 @@ export const buildRequestBody = (formData: Record<string, any>, fields: IFormFie
       return body;
     }
     const value = formData[field.id];
-    if (value !== undefined && value !== null && value !== '') {
-      if (field.type === 'option' && Array.isArray(value)) {
-        body[field.id] = value;
-      } else {
-        body[field.id] = value;
-      }
+    if (field.type === 'option' && Array.isArray(value)) {
+      body[field.id] = value;
+    } else {
+      body[field.id] = value !== undefined && value !== null ? value : '';
     }
     return body;
   }, {} as Record<string, any>);
@@ -274,9 +272,8 @@ export const buildUrlWithParams = (url: string, paramsConfig: Array<{ key: strin
     if (formData) {
       // 直接处理formData，跳过组合组件字段值的逻辑由调用者处理
       Object.entries(formData).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          urlObj.searchParams.append(key, String(value));
-        }
+        const paramValue = value !== undefined && value !== null ? String(value) : '';
+        urlObj.searchParams.append(key, paramValue);
       });
     }
 
