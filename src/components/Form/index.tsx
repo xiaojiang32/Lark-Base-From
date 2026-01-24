@@ -225,10 +225,10 @@ export default function Form({ bgColor }: FormProps) {
 //const isConfig = true;
   // 根据飞书平台的 mode 状态决定是否显示配置面板
   // 创建状态和配置状态显示配置面板，展示状态和全屏状态不显示
-  //const isConfig = mode === DashboardState.Config || mode === DashboardState.Create;
+  const isConfig = mode === DashboardState.Config || mode === DashboardState.Create;
 
   // 临时设置：任何状态下都显示配置面板
-  const isConfig = true;
+  //const isConfig = true;
 
   // 检查字段是否应该显示（基于父级选项的关联关系）
   const isFieldVisible = (field: IFormField): boolean => {
