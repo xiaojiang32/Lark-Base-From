@@ -747,7 +747,7 @@ export default function Form({ bgColor }: FormProps) {
         <div className="config-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '340px', flexShrink: 0, position: 'relative' }}>
           {/* 顶部Tab栏 - 固定 */}
           <div>
-            <Tabs activeKey={activeTab} onChange={setActiveTab} type="line" animated={false}>
+            <Tabs activeKey={activeTab} onChange={setActiveTab}>
               <TabPane tab="配置" itemKey="global" />
               <TabPane tab="组件" itemKey="library" />
               <TabPane tab="组件配置" itemKey="config" />
