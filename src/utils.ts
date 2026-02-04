@@ -194,6 +194,7 @@ export const getDefaultFormConfig = (): IFormConfig => {
     showBorder: true,
     showShadow: true,
     borderRadius: 8,
+    stickyTop: false,
     fields: [
       {
         id: generateId(),

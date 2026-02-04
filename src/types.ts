@@ -148,6 +148,7 @@ export interface IFormConfig {
   padding: number;
   borderColor?: string;
   borderWidth?: number;
+  stickyTop?: boolean; // 新增：是否吸顶
   fields: IFormField[];
   submitButton: ISubmitButton;
   submitConfig?: ISubmitConfig;

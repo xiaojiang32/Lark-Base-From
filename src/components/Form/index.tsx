@@ -56,41 +56,54 @@ function GlobalConfigPanel({ config, setConfig, saveConfig }: any) {
 
         <div className="config-group">
           <div className="config-group-title">样式</div>
-          <div className="config-section">
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Switch
-                checked={config.showBorder}
-                onChange={(checked) => setConfig({ ...config, showBorder: checked })}
-              />
-              <span style={{ marginLeft: 8 }}>显示边框</span>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
+            <div className="config-section" style={{ flex: '1 1 100px' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Switch
+                  checked={config.showBorder}
+                  onChange={(checked) => setConfig({ ...config, showBorder: checked })}
+                />
+                <span style={{ marginLeft: 8 }}>边框</span>
+              </div>
+            </div>
+            <div className="config-section" style={{ flex: '1 1 100px' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Switch
+                  checked={config.showShadow}
+                  onChange={(checked) => setConfig({ ...config, showShadow: checked })}
+                />
+                <span style={{ marginLeft: 8 }}>阴影</span>
+              </div>
+            </div>
+            <div className="config-section" style={{ flex: '1 1 100px' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Switch
+                  checked={config.stickyTop || false}
+                  onChange={(checked) => setConfig({ ...config, stickyTop: checked })}
+                />
+                <span style={{ marginLeft: 8 }}>吸顶</span>
+              </div>
             </div>
           </div>
-          <div className="config-section">
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Switch
-                checked={config.showShadow}
-                onChange={(checked) => setConfig({ ...config, showShadow: checked })}
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <div className="config-section" style={{ flex: '1 1 150px' }}>
+              <label>圆角大小</label>
+              <InputNumber
+                value={config.borderRadius}
+                onChange={(value) => setConfig({ ...config, borderRadius: value || 8 })}
+                min={0}
+                max={16}
               />
-              <span style={{ marginLeft: 8 }}>显示阴影</span>
             </div>
-          </div>
-          <div className="config-section">
-            <label>圆角大小</label>
-            <InputNumber
-              value={config.borderRadius}
-              onChange={(value) => setConfig({ ...config, borderRadius: value || 8 })}
-              min={0}
-              max={16}
-            />
-          </div>
-          <div className="config-section">
-            <label>边距</label>
-            <InputNumber
-              value={config.padding}
-              onChange={(value) => setConfig({ ...config, padding: value || 16 })}
-              min={0}
-              max={64}
-            />
+            <div className="config-section" style={{ flex: '1 1 150px' }}>
+              <label>边距</label>
+              <InputNumber
+                value={config.padding}
+                onChange={(value) => setConfig({ ...config, padding: value || 16 })}
+                min={0}
+                max={64}
+              />
+            </div>
           </div>
         </div>
 
@@ -148,10 +161,6 @@ function GlobalConfigPanel({ config, setConfig, saveConfig }: any) {
             />
           </div>
         </div>
-
-        <Button type="primary" theme="solid" onClick={saveConfig} style={{ width: '100%', marginTop: 20 }}>
-          保存
-        </Button>
       </div>
     </div>
   );
@@ -707,7 +716,7 @@ export default function Form({ bgColor }: FormProps) {
 
   return (
     <main style={{ backgroundColor: bgColor }} className={classnames({ 'main-config': isConfig, 'main': true })}>
-      <div className="content">
+      <div className="content" style={{ alignItems: config.stickyTop ? 'flex-start' : 'center', paddingTop: '0px', paddingBottom: '0px' }}>
         <div
           className="form-container"
           style={{
@@ -735,209 +744,234 @@ export default function Form({ bgColor }: FormProps) {
       </div>
 
       {isConfig && (
-        <div className="config-panel">
-          <Tabs activeKey={activeTab} onChange={setActiveTab}>
-            <TabPane tab="配置" itemKey="global">
+        <div className="config-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '340px', flexShrink: 0, position: 'relative' }}>
+          {/* 顶部Tab栏 - 固定 */}
+          <div>
+            <Tabs activeKey={activeTab} onChange={setActiveTab} type="line" animated={false}>
+              <TabPane tab="配置" itemKey="global" />
+              <TabPane tab="组件" itemKey="library" />
+              <TabPane tab="组件配置" itemKey="config" />
+              <TabPane tab="数据提交" itemKey="submit" />
+            </Tabs>
+          </div>
+          
+          {/* 中间配置内容 - 可滚动 */}
+          <div style={{ flex: 1, overflow: 'auto', padding: '0px 12px', marginTop: '-1px' }}>
+            {activeTab === 'global' && (
               <GlobalConfigPanel config={config} setConfig={setConfig} saveConfig={saveConfig} />
-            </TabPane>
-            <TabPane tab="组件" itemKey="library">
+            )}
+            {activeTab === 'library' && (
               <ComponentLibrary onAddField={handleAddField} />
-            </TabPane>
-            <TabPane tab="组件配置" itemKey="config">
-              {/* 直接使用扁平的组件列表进行拖拽排序，但按层级展示 */}
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="fields-list" direction="vertical">
-                  {(provided) => {
-                    // 先获取所有组合组件
-                    const compositeFields = config.fields.filter(f => f.type === 'composite') as any[];
-                    // 创建子组件到父组件的映射
-                    const childToParentMap: Record<string, string> = {};
-                    compositeFields.forEach(compositeField => {
-                      compositeField.children.forEach((childId: string) => {
-                        childToParentMap[childId] = compositeField.id;
+            )}
+            {activeTab === 'config' && (
+              <>
+                {/* 直接使用扁平的组件列表进行拖拽排序，但按层级展示 */}
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId="fields-list" direction="vertical">
+                    {(provided) => {
+                      // 先获取所有组合组件
+                      const compositeFields = config.fields.filter(f => f.type === 'composite') as any[];
+                      // 创建子组件到父组件的映射
+                      const childToParentMap: Record<string, string> = {};
+                      compositeFields.forEach(compositeField => {
+                        compositeField.children.forEach((childId: string) => {
+                          childToParentMap[childId] = compositeField.id;
+                        });
                       });
-                    });
-                    
-                    // 创建父组件到子组件的映射
-                    const parentToChildrenMap: Record<string, string[]> = {};
-                    compositeFields.forEach(compositeField => {
-                      parentToChildrenMap[compositeField.id] = compositeField.children;
-                    });
-                    
-                    // 筛选出所有非子组件（顶级组件）
-                    const topLevelFields = config.fields.filter(field => !childToParentMap[field.id]);
-                    
-                    return (
-                      <div
-                        className="fields-list"
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                      >
-                        {/* 渲染所有顶级组件，包括组合组件 */}
-                        {topLevelFields.map((field, parentIndex) => {
-                          // 计算该顶级组件在扁平列表中的实际索引
-                          const flatIndex = config.fields.findIndex(f => f.id === field.id);
-                          
-                          return (
-                            <React.Fragment key={field.id}>
-                              {/* 渲染顶级组件 */}
-                              <Draggable key={field.id} draggableId={field.id} index={flatIndex}>
-                                {(provided) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    className={`field-item ${selectedField?.id === field.id ? 'selected' : ''}`}
-                                    onClick={() => handleFieldClick(field)}
-                                    style={{
-                                      ...provided.draggableProps.style,
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      marginLeft: '0',
-                                      borderLeft: 'none',
-                                      paddingLeft: '0',
-                                      opacity: 1
-                                    }}
-                                  >
-                                    {/* 拖拽手柄 */}
-                                    <span
-                                      {...provided.dragHandleProps}
+                      
+                      // 创建父组件到子组件的映射
+                      const parentToChildrenMap: Record<string, string[]> = {};
+                      compositeFields.forEach(compositeField => {
+                        parentToChildrenMap[compositeField.id] = compositeField.children;
+                      });
+                      
+                      // 筛选出所有非子组件（顶级组件）
+                      const topLevelFields = config.fields.filter(field => !childToParentMap[field.id]);
+                      
+                      return (
+                        <div
+                          className="fields-list"
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                        >
+                          {/* 渲染所有顶级组件，包括组合组件 */}
+                          {topLevelFields.map((field, parentIndex) => {
+                            // 计算该顶级组件在扁平列表中的实际索引
+                            const flatIndex = config.fields.findIndex(f => f.id === field.id);
+                            
+                            return (
+                              <React.Fragment key={field.id}>
+                                {/* 渲染顶级组件 */}
+                                <Draggable key={field.id} draggableId={field.id} index={flatIndex}>
+                                  {(provided) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      className={`field-item ${selectedField?.id === field.id ? 'selected' : ''}`}
+                                      onClick={() => handleFieldClick(field)}
                                       style={{
-                                        cursor: 'grab',
-                                        marginRight: '8px',
-                                        padding: '4px',
-                                        userSelect: 'none',
-                                        color: 'inherit'
+                                        ...provided.draggableProps.style,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        marginLeft: '0',
+                                        borderLeft: 'none',
+                                        paddingLeft: '0',
+                                        opacity: 1
                                       }}
                                     >
-                                      ☰
-                                    </span>
-                                    <span className="field-type">{getFieldTypeName(field.type)}</span>
-                                    <span className="field-name">{field.name}</span>
-                                    <Button
-                                      type="danger"
-                                      size="small"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteField(field.id);
-                                      }}
-                                    >
-                                      删除
-                                    </Button>
-                                  </div>
-                                )}
-                              </Draggable>
-                              
-                              {/* 如果是组合组件，渲染它的子组件 */}
-                              {field.type === 'composite' && parentToChildrenMap[field.id] && parentToChildrenMap[field.id].length > 0 && (
-                                <div className="composite-children">
-                                  {parentToChildrenMap[field.id].map((childId, childIndex) => {
-                                    const childField = config.fields.find(f => f.id === childId);
-                                    if (!childField) return null;
-                                    
-                                    // 计算该子组件在扁平列表中的实际索引
-                                    const childFlatIndex = config.fields.findIndex(f => f.id === childId);
-                                    
-                                    return (
-                                      <Draggable key={childField.id} draggableId={childField.id} index={childFlatIndex}>
-                                        {(provided) => (
-                                          <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            className={`field-item ${selectedField?.id === childField.id ? 'selected' : ''}`}
-                                            onClick={() => handleFieldClick(childField)}
-                                            style={{
-                                              ...provided.draggableProps.style,
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              marginLeft: '24px',
-                                              borderLeft: '2px solid #d9d9d9',
-                                              paddingLeft: '12px',
-                                              opacity: 0.8
-                                            }}
-                                          >
-                                            {/* 子组件禁止拖拽 - 移除拖拽手柄 */}
-                                            <span
+                                      {/* 拖拽手柄 */}
+                                      <span
+                                        {...provided.dragHandleProps}
+                                        style={{
+                                          cursor: 'grab',
+                                          marginRight: '8px',
+                                          padding: '4px',
+                                          userSelect: 'none',
+                                          color: 'inherit'
+                                        }}
+                                      >
+                                        ☰
+                                      </span>
+                                      <span className="field-type">{getFieldTypeName(field.type)}</span>
+                                      <span className="field-name">{field.name}</span>
+                                      <Button
+                                        type="danger"
+                                        size="small"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteField(field.id);
+                                        }}
+                                      >
+                                        删除
+                                      </Button>
+                                    </div>
+                                  )}
+                                </Draggable>
+                                
+                                {/* 如果是组合组件，渲染它的子组件 */}
+                                {field.type === 'composite' && parentToChildrenMap[field.id] && parentToChildrenMap[field.id].length > 0 && (
+                                  <div className="composite-children">
+                                    {parentToChildrenMap[field.id].map((childId, childIndex) => {
+                                      const childField = config.fields.find(f => f.id === childId);
+                                      if (!childField) return null;
+                                      
+                                      // 计算该子组件在扁平列表中的实际索引
+                                      const childFlatIndex = config.fields.findIndex(f => f.id === childId);
+                                      
+                                      return (
+                                        <Draggable key={childField.id} draggableId={childField.id} index={childFlatIndex}>
+                                          {(provided) => (
+                                            <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              className={`field-item ${selectedField?.id === childField.id ? 'selected' : ''}`}
+                                              onClick={() => handleFieldClick(childField)}
                                               style={{
-                                                marginRight: '8px',
-                                                padding: '4px',
-                                                userSelect: 'none',
-                                                color: '#999'
+                                                ...provided.draggableProps.style,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                marginLeft: '24px',
+                                                borderLeft: '2px solid #d9d9d9',
+                                                paddingLeft: '12px',
+                                                opacity: 0.8
                                               }}
                                             >
-                                              ⋮
-                                            </span>
-                                            <span className="field-type">{getFieldTypeName(childField.type)}</span>
-                                            <span className="field-name">{childField.name}</span>
-                                            <Button
-                                              type="warning"
-                                              size="small"
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                // 从组合组件中移除子组件（退出组合组件）
-                                                const compositeField = config.fields.find(f => f.id === field.id) as any;
-                                                if (compositeField) {
-                                                  const newChildren = compositeField.children.filter((id: string) => id !== childField.id);
-                                                  let newRatios = compositeField.widthRatios;
-                                                  
-                                                  // 自动调整宽度比例
-                                                  if (newChildren.length > 0) {
-                                                    const ratios = compositeField.widthRatios.split(':').map((r: string) => r.trim());
-                                                    if (ratios.length === newChildren.length + 1) {
-                                                      newRatios = ratios.filter((_: any, i: number) => i !== compositeField.children.indexOf(childField.id)).join(':');
+                                              {/* 子组件禁止拖拽 - 移除拖拽手柄 */}
+                                              <span
+                                                style={{
+                                                  marginRight: '8px',
+                                                  padding: '4px',
+                                                  userSelect: 'none',
+                                                  color: '#999'
+                                                }}
+                                              >
+                                                ⋮
+                                              </span>
+                                              <span className="field-type">{getFieldTypeName(childField.type)}</span>
+                                              <span className="field-name">{childField.name}</span>
+                                              <Button
+                                                type="warning"
+                                                size="small"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  // 从组合组件中移除子组件（退出组合组件）
+                                                  const compositeField = config.fields.find(f => f.id === field.id) as any;
+                                                  if (compositeField) {
+                                                    const newChildren = compositeField.children.filter((id: string) => id !== childField.id);
+                                                    let newRatios = compositeField.widthRatios;
+                                                    
+                                                    // 自动调整宽度比例
+                                                    if (newChildren.length > 0) {
+                                                      const ratios = compositeField.widthRatios.split(':').map((r: string) => r.trim());
+                                                      if (ratios.length === newChildren.length + 1) {
+                                                        newRatios = ratios.filter((_: any, i: number) => i !== compositeField.children.indexOf(childField.id)).join(':');
+                                                      }
+                                                    }
+                                                    
+                                                    // 更新组合组件配置
+                                                    const updatedCompositeField = {
+                                                      ...compositeField,
+                                                      children: newChildren,
+                                                      widthRatios: newRatios
+                                                    };
+                                                    
+                                                    // 更新配置
+                                                    setConfig({
+                                                      ...config,
+                                                      fields: config.fields.map(f => f.id === compositeField.id ? updatedCompositeField : f)
+                                                    });
+                                                    
+                                                    // 如果当前选中的是这个组合组件，重新选择它以更新配置面板
+                                                    if (selectedField?.id === compositeField.id) {
+                                                      setSelectedField(updatedCompositeField as IFormField);
                                                     }
                                                   }
-                                                  
-                                                  // 更新组合组件配置
-                                                  const updatedCompositeField = {
-                                                    ...compositeField,
-                                                    children: newChildren,
-                                                    widthRatios: newRatios
-                                                  };
-                                                  
-                                                  // 更新配置
-                                                  setConfig({
-                                                    ...config,
-                                                    fields: config.fields.map(f => f.id === compositeField.id ? updatedCompositeField : f)
-                                                  });
-                                                  
-                                                  // 如果当前选中的是这个组合组件，重新选择它以更新配置面板
-                                                  if (selectedField?.id === compositeField.id) {
-                                                    setSelectedField(updatedCompositeField as IFormField);
-                                                  }
-                                                }
-                                              }}
-                                            >
-                                              退出
-                                            </Button>
-                                          </div>
-                                        )}
-                                      </Draggable>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
-                        {provided.placeholder}
-                      </div>
-                    );
-                  }}
-                </Droppable>
-              </DragDropContext>
-              {selectedField && (
-                <FieldConfigPanel
-                  field={selectedField}
-                  onUpdateField={handleUpdateField}
-                  onDeleteField={handleDeleteField}
-                  allFields={config.fields}
-                />
-              )}
-            </TabPane>
-            <TabPane tab="数据提交" itemKey="submit">
+                                                }}
+                                              >
+                                                退出
+                                              </Button>
+                                            </div>
+                                          )}
+                                        </Draggable>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+                          {provided.placeholder}
+                        </div>
+                      );
+                    }}
+                  </Droppable>
+                </DragDropContext>
+                {selectedField && (
+                  <FieldConfigPanel
+                    field={selectedField}
+                    onUpdateField={handleUpdateField}
+                    onDeleteField={handleDeleteField}
+                    allFields={config.fields}
+                  />
+                )}
+              </>
+            )}
+            {activeTab === 'submit' && (
               <SubmitConfigPanel config={config} setConfig={setConfig} fields={config.fields} />
-            </TabPane>
-          </Tabs>
+            )}
+          </div>
+          
+          {/* 底部保存按钮 - 固定 */}
+          <div style={{ borderTop: '1px solid var(--divider)', padding: '16px', backgroundColor: 'var(--bg-body)', height: '70px', boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
+            <Button
+              type="primary"
+              theme="solid"
+              onClick={saveConfig}
+              style={{ width: '100%' }}
+            >
+              保存
+            </Button>
+          </div>
         </div>
       )}
 
